@@ -132,9 +132,11 @@ func (f *Fpdf) parsepngstream(buf *bytes.Buffer, readdpi bool) (info *ImageInfoT
 				switch units {
 				// if units is 1 then measurement is px/meter
 				case 1:
-					info.dpi = float64(x) / 39.3701 // inches per meter
+					info.dpiX = float64(x) / 39.3701 // inches per meter
+					info.dpiY = info.dpiX
 				default:
-					info.dpi = float64(x)
+					info.dpiX = float64(x)
+					info.dpiY = info.dpiX
 				}
 			}
 			_ = buf.Next(4)

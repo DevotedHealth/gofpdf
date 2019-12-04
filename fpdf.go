@@ -3015,12 +3015,12 @@ func (f *Fpdf) imageOut(info *ImageInfoType, x, y, w, h float64, allowNegativeX,
 	if w == -1 {
 		// Set image width to whatever value for dpi we read
 		// from the image or that was set manually
-		w = -info.dpi
+		w = -info.dpiX
 	}
 	if h == -1 {
 		// Set image height to whatever value for dpi we read
 		// from the image or that was set manually
-		h = -info.dpi
+		h = -info.dpiY
 	}
 	if w < 0 {
 		w = -info.w * 72.0 / w / f.k
@@ -3642,7 +3642,7 @@ func be16(buf []byte) int {
 
 func (f *Fpdf) newImageInfo() *ImageInfoType {
 	// default dpi to 72 unless told otherwise
-	return &ImageInfoType{scale: f.k, dpi: 72}
+	return &ImageInfoType{scale: f.k, dpiX: 72, dpiY: 72}
 }
 
 // parsejpg extracts info from io.Reader with JPEG data

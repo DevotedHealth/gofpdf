@@ -177,7 +177,8 @@ type ImageInfoType struct {
 	dp    string  // DecodeParms
 	trns  []int   // Transparency mask
 	scale float64 // Document scale factor
-	dpi   float64 // Dots-per-inch found from image file (png only)
+	dpiX  float64 // Dots-per-inch found from image file (png only)
+	dpiY  float64 // Dots-per-inch found from image file (png only)
 	i     string  // SHA-1 checksum of the above values.
 }
 
@@ -189,7 +190,7 @@ func generateImageID(info *ImageInfoType) (string, error) {
 // GobEncode encodes the receiving image to a byte slice.
 func (info *ImageInfoType) GobEncode() (buf []byte, err error) {
 	fields := []interface{}{info.data, info.smask, info.n, info.w, info.h, info.cs,
-		info.pal, info.bpc, info.f, info.dp, info.trns, info.scale, info.dpi}
+		info.pal, info.bpc, info.f, info.dp, info.trns, info.scale, info.dpiX, info.dpiY}
 	w := new(bytes.Buffer)
 	encoder := gob.NewEncoder(w)
 	for j := 0; j < len(fields) && err == nil; j++ {
@@ -205,7 +206,7 @@ func (info *ImageInfoType) GobEncode() (buf []byte, err error) {
 // the receiving image.
 func (info *ImageInfoType) GobDecode(buf []byte) (err error) {
 	fields := []interface{}{&info.data, &info.smask, &info.n, &info.w, &info.h,
-		&info.cs, &info.pal, &info.bpc, &info.f, &info.dp, &info.trns, &info.scale, &info.dpi}
+		&info.cs, &info.pal, &info.bpc, &info.f, &info.dp, &info.trns, &info.scale, &info.dpiX, info.dpiY}
 	r := bytes.NewBuffer(buf)
 	decoder := gob.NewDecoder(r)
 	for j := 0; j < len(fields) && err == nil; j++ {
@@ -245,12 +246,12 @@ func (info *ImageInfoType) Extent() (wd, ht float64) {
 
 // Width returns the width of the image in the units of the Fpdf object.
 func (info *ImageInfoType) Width() float64 {
-	return info.w / (info.scale * info.dpi / 72)
+	return info.w / (info.scale * info.dpiX / 72)
 }
 
 // Height returns the height of the image in the units of the Fpdf object.
 func (info *ImageInfoType) Height() float64 {
-	return info.h / (info.scale * info.dpi / 72)
+	return info.h / (info.scale * info.dpiY / 72)
 }
 
 // SetDpi sets the dots per inch for an image. PNG images MAY have their dpi
@@ -258,7 +259,24 @@ func (info *ImageInfoType) Height() float64 {
 // currently available automatically for JPG and GIF images, so if it's
 // important to you, you can set it here. It defaults to 72 dpi.
 func (info *ImageInfoType) SetDpi(dpi float64) {
-	info.dpi = dpi
+	info.dpiX = dpi
+	info.dpiY = dpi
+}
+
+// SetDpiX sets the dots per inch for an image. PNG images MAY have their dpi
+// set automatically, if the image specifies it. DPI information is not
+// currently available automatically for JPG and GIF images, so if it's
+// important to you, you can set it here. It defaults to 72 dpi.
+func (info *ImageInfoType) SetDpiX(dpi float64) {
+	info.dpiX = dpi
+}
+
+// SetDpiY sets the dots per inch for an image. PNG images MAY have their dpi
+// set automatically, if the image specifies it. DPI information is not
+// currently available automatically for JPG and GIF images, so if it's
+// important to you, you can set it here. It defaults to 72 dpi.
+func (info *ImageInfoType) SetDpiY(dpi float64) {
+	info.dpiY = dpi
 }
 
 type fontFileType struct {
